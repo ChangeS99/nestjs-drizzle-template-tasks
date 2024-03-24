@@ -1,7 +1,7 @@
 import { text, sqliteTable } from 'drizzle-orm/sqlite-core';
 import { v4 as uuid } from "uuid"
 
-export const tasks = sqliteTable('users', {
+export const tasks = sqliteTable('tasks', {
     id: text("id").primaryKey().$defaultFn(() => uuid()),
     title: text('title').notNull(),
     description: text('description').notNull(),
