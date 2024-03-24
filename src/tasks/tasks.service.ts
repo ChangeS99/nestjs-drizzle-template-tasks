@@ -41,7 +41,7 @@ export class TasksService {
 
         // if not found return 404 error
         if (!task) {
-            throw new NotFoundException()
+            throw new NotFoundException(`Task with ${id} not found.`)
         }
 
         return task;
@@ -66,7 +66,7 @@ export class TasksService {
         const taskExist = this.tasks.find(f => f.id === id)
 
         if (!taskExist) {
-
+            throw new NotFoundException(`Task with ${id} not found.`)
         }
 
         this.tasks = this.tasks.filter(f => f.id !== id);
