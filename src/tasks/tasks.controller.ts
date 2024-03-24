@@ -1,9 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { DeleteTaskDto } from './dto/delete.task.dto';
 
 @Controller('tasks')
+@UsePipes(new ValidationPipe({
+    transform: true,
+    transformOptions: {
+        enableImplicitConversion: true
+    }
+}))
 export class TasksController {
     constructor(
         private tasksService: TasksService
@@ -26,5 +33,12 @@ export class TasksController {
         @Body() createTaskDto: CreateTaskDto
     ): Task {
         return this.tasksService.createTask(createTaskDto)
+    }
+
+    @Delete(":id")
+    deleteTask(
+        @Param("id") id: string
+    ) {
+        return this.tasksService.deleteTask(id)
     }
 }

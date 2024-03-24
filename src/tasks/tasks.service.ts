@@ -3,6 +3,7 @@ import { Task, TaskStatus } from "./task.model";
 
 import { v4 as uuid } from "uuid"
 import { CreateTaskDto } from "./dto/create-task.dto";
+import { DeleteTaskDto } from "./dto/delete.task.dto";
 
 @Injectable()
 export class TasksService {
@@ -31,6 +32,16 @@ export class TasksService {
         this.tasks.push(task)
 
         return task
+    }
+
+    deleteTask(id: string) {
+        const taskExist = this.tasks.find(f => f.id === id)
+
+        if (!taskExist) {
+
+        }
+
+        this.tasks = this.tasks.filter(f => f.id !== id);
     }
 
 }
