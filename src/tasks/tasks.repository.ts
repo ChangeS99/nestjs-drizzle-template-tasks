@@ -33,4 +33,14 @@ export class TaskRepository {
 
         return newTask[0]
     }
+
+    async deleteTask(id: string): Promise<Task> {
+        const deleted = await this.drizzle.delete(schema.tasks).where(eq(schema.tasks.id, id)).returning()
+
+        if (deleted.length === 0) {
+            throw new NotFoundException(`Task with ${id} not found.`)
+        }
+
+        return deleted[0]
+    }
 }

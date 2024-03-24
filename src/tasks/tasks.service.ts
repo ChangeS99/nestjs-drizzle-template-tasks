@@ -39,12 +39,16 @@ export class TasksService {
     //     return tasks
     // }
 
-    async getTaskById(id: string): Promise<Task> {
+    getTaskById(id: string): Promise<Task> {
         return this.taskRepository.getTaskById(id)
     }
 
     createTask(createTaskDto: CreateTaskDto): Promise<Task> {
         return this.taskRepository.createTask(createTaskDto)
+    }
+
+    deleteTask(id: string): Promise<Task> {
+        return this.taskRepository.deleteTask(id)
     }
 
     // createTask(createTaskDto: CreateTaskDto): Task {

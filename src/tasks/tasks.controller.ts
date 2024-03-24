@@ -53,6 +53,13 @@ export class TasksController {
         return this.tasksService.createTask(createTaskDto)
     }
 
+    @Delete(":id")
+    deleteTask(
+        @Param("id") id: string
+    ) {
+        return this.tasksService.deleteTask(id)
+    }
+
     // @Post("create")
     // createTask(
     //     @Body() createTaskDto: CreateTaskDto
