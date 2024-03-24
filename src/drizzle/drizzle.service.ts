@@ -8,5 +8,8 @@ import * as schema from "./schema"
 export class DrizzleService {
     constructor(
         @Inject(DrizzleAsyncProvider) readonly db: BetterSQLite3Database<typeof schema>
-    ) { }
+    ) {
+
+
+    }
 }

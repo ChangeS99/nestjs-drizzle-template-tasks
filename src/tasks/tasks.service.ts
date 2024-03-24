@@ -1,83 +1,83 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Task, TaskStatus } from "./task.model";
 
-import { v4 as uuid } from "uuid"
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { DeleteTaskDto } from "./dto/delete.task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
+import { TaskRepository } from "./tasks.repository";
+import { Task } from "src/drizzle/schema.types";
 
 @Injectable()
 export class TasksService {
-    private tasks: Task[] = []
+    // private tasks: Task[] = []
+    constructor(
+        private taskRepository: TaskRepository
+    ) { }
 
-    fetchAllTasks(): Task[] {
-        return this.tasks;
+
+    // fetchAllTasks(): Task[] {
+    //     return this.tasks;
+    // }
+
+    // getTasksWithFilters(filterDto: GetTasksFilterDto) {
+    //     const { status, search } = filterDto;
+    //     let tasks = this.fetchAllTasks()
+    //     // search status
+    //     if (status) {
+    //         tasks = tasks.filter(t => t.status = status)
+    //     }
+    //     // search search
+    //     if (search) {
+    //         tasks = tasks.filter(t => {
+    //             if (t.title.includes(search) || t.description.includes(search)) {
+    //                 return true
+    //             }
+    //             return false
+    //         })
+    //     }
+    //     // return final
+
+    //     return tasks
+    // }
+
+    async getTaskById(id: string): Promise<Task> {
+        return this.taskRepository.getTaskById(id)
     }
 
-    getTasksWithFilters(filterDto: GetTasksFilterDto) {
-        const { status, search } = filterDto;
-        let tasks = this.fetchAllTasks()
-        // search status
-        if (status) {
-            tasks = tasks.filter(t => t.status = status)
-        }
-        // search search
-        if (search) {
-            tasks = tasks.filter(t => {
-                if (t.title.includes(search) || t.description.includes(search)) {
-                    return true
-                }
-                return false
-            })
-        }
-        // return final
-
-        return tasks
+    createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+        return this.taskRepository.createTask(createTaskDto)
     }
 
-    fetchTaskById(id: string): Task | null {
-        // try to get task by id
-        const task = this.tasks.find(task => task.id === id)
+    // createTask(createTaskDto: CreateTaskDto): Task {
+    //     const { title, description } = createTaskDto
 
-        // if not found return 404 error
-        if (!task) {
-            throw new NotFoundException(`Task with ${id} not found.`)
-        }
+    //     const task = {
+    //         id: uuid(),
+    //         title,
+    //         description,
+    //         status: TaskStatus.OPEN
+    //     }
 
-        return task;
-    }
+    //     this.tasks.push(task)
 
-    createTask(createTaskDto: CreateTaskDto): Task {
-        const { title, description } = createTaskDto
+    //     return task
+    // }
 
-        const task = {
-            id: uuid(),
-            title,
-            description,
-            status: TaskStatus.OPEN
-        }
+    // deleteTask(id: string) {
+    //     const taskExist = this.tasks.find(f => f.id === id)
 
-        this.tasks.push(task)
+    //     if (!taskExist) {
+    //         throw new NotFoundException(`Task with ${id} not found.`)
+    //     }
 
-        return task
-    }
-
-    deleteTask(id: string) {
-        const taskExist = this.tasks.find(f => f.id === id)
-
-        if (!taskExist) {
-            throw new NotFoundException(`Task with ${id} not found.`)
-        }
-
-        this.tasks = this.tasks.filter(f => f.id !== id);
-    }
+    //     this.tasks = this.tasks.filter(f => f.id !== id);
+    // }
 
 
-    updateTaskStatus(id: string, status: TaskStatus) {
-        const task = this.fetchTaskById(id);
+    // updateTaskStatus(id: string, status: TaskStatus) {
+    //     const task = this.fetchTaskById(id);
 
-        task.status = status;
+    //     task.status = status;
 
-        return task;
-    }
+    //     return task;
+    // }
 }

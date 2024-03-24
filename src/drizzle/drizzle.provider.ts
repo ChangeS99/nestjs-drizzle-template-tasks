@@ -9,11 +9,12 @@ export const drizzleProvider = [
     {
         provide: DrizzleAsyncProvider,
         useFactory: async () => {
-            const sqlite = new Database(process.env.DB_URL)
+            const sqlite = new Database("demo.db")
 
             const db = drizzle(sqlite, {
                 schema
             })
+
 
             return db
         },

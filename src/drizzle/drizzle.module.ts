@@ -9,6 +9,7 @@ import { DrizzleService } from './drizzle.service';
     ],
 
     exports: [
+        DrizzleAsyncProvider,
         DrizzleService
     ]
 })

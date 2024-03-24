@@ -7,7 +7,7 @@ export const tasks = sqliteTable('tasks', {
     description: text('description').notNull(),
     status: text("status", {
         enum: ["OPEN", "IN_PROGRESS", "DONE"]
-    })
+    }).default("OPEN")
 });
 
 
