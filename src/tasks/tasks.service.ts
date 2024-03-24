@@ -44,4 +44,12 @@ export class TasksService {
         this.tasks = this.tasks.filter(f => f.id !== id);
     }
 
+
+    updateTaskStatus(id: string, status: TaskStatus) {
+        const task = this.fetchTaskById(id);
+
+        task.status = status;
+
+        return task;
+    }
 }
