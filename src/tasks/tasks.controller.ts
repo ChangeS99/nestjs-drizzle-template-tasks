@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { DeleteTaskDto } from './dto/delete.task.dto';
@@ -6,6 +6,7 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { Task } from 'src/drizzle/schema.types';
 import { filter } from 'rxjs';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('tasks')
 @UsePipes(new ValidationPipe({
@@ -14,6 +15,7 @@ import { filter } from 'rxjs';
         enableImplicitConversion: true
     }
 }))
+@UseGuards(AuthGuard())
 export class TasksController {
     constructor(
         private tasksService: TasksService
