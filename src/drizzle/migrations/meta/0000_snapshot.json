@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "9ec98bea-a114-4ba5-b8d3-eae6af38e6d9",
+  "id": "0cb437cf-35c8-4fdb-b943-8874b77d378a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "users": {
-      "name": "users",
+    "tasks": {
+      "name": "tasks",
       "columns": {
         "id": {
           "name": "id",
@@ -33,7 +33,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'OPEN'"
         }
       },
       "indexes": {},

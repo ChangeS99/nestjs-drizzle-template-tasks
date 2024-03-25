@@ -6,15 +6,17 @@ import { DrizzleService } from 'src/drizzle/drizzle.service';
 
 import { TaskRepository } from './tasks.repository';
 import { DrizzleAsyncProvider, drizzleProvider } from 'src/drizzle/drizzle.provider';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Task } from './task.entity';
 
 @Module({
     imports: [
-        DrizzleModule,
+        TypeOrmModule.forFeature([Task]),
+        DrizzleModule
     ],
     providers: [
         TasksService,
         TaskRepository,
-        // ...drizzleProvider
 
     ],
     controllers: [TasksController]

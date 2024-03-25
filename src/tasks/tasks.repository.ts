@@ -3,55 +3,114 @@ import { Inject, NotFoundException } from "@nestjs/common";
 import { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import { DrizzleAsyncProvider } from "src/drizzle/drizzle.provider";
 import { DrizzleService } from "src/drizzle/drizzle.service";
-import { Task } from "src/drizzle/schema.types";
 import * as schema from "../drizzle/schema"
-import { eq } from "drizzle-orm";
+import { and, eq, ilike, like, or, sql } from "drizzle-orm";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { TaskStatus } from "./task-status.enum";
+import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Task } from "@src/drizzle/schema.types";
+import { Repository } from "typeorm";
 
 export class TaskRepository {
     constructor(
-        @Inject(DrizzleAsyncProvider)
-        private drizzle: BetterSQLite3Database<typeof schema>
+        @Inject(DrizzleAsyncProvider) readonly db: BetterSQLite3Database<typeof schema>,
+
         // private drizzle: DrizzleService
     ) { }
 
     async getTaskById(id: string): Promise<Task> {
-        const task = await this.drizzle.query.tasks.findFirst({
+        const task = await this.db.query.tasks.findFirst({
             where: (tasks, { eq }) => eq(tasks.id, id)
         })
-        if (!task) {
-            throw new NotFoundException(`Task with ${id} not found.`)
-        }
+
+
+
+        if (!task) throw new NotFoundException(`Task with ID ${id} not found`)
+
         return task
     }
 
     async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-        const newTask = await this.drizzle.insert(schema.tasks).values({
+        const task = await this.db.insert(schema.tasks).values({
             title: createTaskDto.title,
-            description: createTaskDto.description
-        }).returning()
+            description: createTaskDto.description,
+            status: TaskStatus.OPEN
+        })
 
-        return newTask[0]
+
+        return task[0];
     }
 
-    async deleteTask(id: string): Promise<Task> {
-        const deleted = await this.drizzle.delete(schema.tasks).where(eq(schema.tasks.id, id)).returning()
+    async deleteTask(id: string): Promise<void> {
 
-        if (deleted.length === 0) {
-            throw new NotFoundException(`Task with ${id} not found.`)
-        }
+        const deleted = await this.db.delete(schema.tasks).returning();
 
-        return deleted[0]
+        if (deleted.length === 0) throw new NotFoundException(`Task with ID ${id} not found`)
+
     }
 
     async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
         const task = await this.getTaskById(id)
 
-        const updated = await this.drizzle.update(schema.tasks).set({
+        const updated = await this.db.update(schema.tasks).set({
             status
-        }).returning()
+        }).where(eq(schema.tasks.id, id)).returning();
+
+        if (updated.length === 0) {
+            throw new NotFoundException(`Task with ID ${id} not found`)
+        }
+
+
 
         return updated[0]
     }
+
+    async getTasks(filterDto: GetTasksFilterDto) {
+        const { status, search } = filterDto;
+        // if status and search both are defined
+        if (status && search) {
+            const result = await this.db.select().from(schema.tasks).where(
+                and(
+                    or(
+                        sql`lower(${schema.tasks.title}) like lower(${search})`,
+                        sql`lower(${schema.tasks.description}) like lower(${search})`
+                    ),
+                    eq(schema.tasks.status, status)
+                )
+
+            )
+
+            return result
+
+        }
+
+        // if status is given
+        if (status) {
+            const result = await this.db.select().from(schema.tasks).where(
+                eq(schema.tasks.status, status)
+            )
+
+            return result
+        }
+
+        // if search is defined 
+        if (search) {
+            const result = await this.db.select().from(schema.tasks).where(
+                or(
+                    sql`lower(${schema.tasks.title}) like lower(${search})`,
+                    sql`lower(${schema.tasks.description}) like lower(${search})`
+                )
+
+            )
+
+            return result
+        }
+
+        const result = await this.db.select().from(schema.tasks)
+
+        return result
+
+    }
+
 }
