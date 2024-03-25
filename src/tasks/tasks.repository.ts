@@ -7,6 +7,7 @@ import { Task } from "src/drizzle/schema.types";
 import * as schema from "../drizzle/schema"
 import { eq } from "drizzle-orm";
 import { CreateTaskDto } from "./dto/create-task.dto";
+import { TaskStatus } from "./task-status.enum";
 
 export class TaskRepository {
     constructor(
@@ -42,5 +43,15 @@ export class TaskRepository {
         }
 
         return deleted[0]
+    }
+
+    async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+        const task = await this.getTaskById(id)
+
+        const updated = await this.drizzle.update(schema.tasks).set({
+            status
+        }).returning()
+
+        return updated[0]
     }
 }

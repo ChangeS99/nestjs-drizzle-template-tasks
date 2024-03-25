@@ -5,6 +5,7 @@ import { DeleteTaskDto } from "./dto/delete.task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { TaskRepository } from "./tasks.repository";
 import { Task } from "src/drizzle/schema.types";
+import { TaskStatus } from "./task-status.enum";
 
 @Injectable()
 export class TasksService {
@@ -39,49 +40,22 @@ export class TasksService {
     //     return tasks
     // }
 
-    getTaskById(id: string): Promise<Task> {
+    async getTaskById(id: string): Promise<Task> {
         return this.taskRepository.getTaskById(id)
     }
 
-    createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
         return this.taskRepository.createTask(createTaskDto)
     }
 
-    deleteTask(id: string): Promise<Task> {
+    async deleteTask(id: string): Promise<Task> {
         return this.taskRepository.deleteTask(id)
     }
 
-    // createTask(createTaskDto: CreateTaskDto): Task {
-    //     const { title, description } = createTaskDto
-
-    //     const task = {
-    //         id: uuid(),
-    //         title,
-    //         description,
-    //         status: TaskStatus.OPEN
-    //     }
-
-    //     this.tasks.push(task)
-
-    //     return task
-    // }
-
-    // deleteTask(id: string) {
-    //     const taskExist = this.tasks.find(f => f.id === id)
-
-    //     if (!taskExist) {
-    //         throw new NotFoundException(`Task with ${id} not found.`)
-    //     }
-
-    //     this.tasks = this.tasks.filter(f => f.id !== id);
-    // }
 
 
-    // updateTaskStatus(id: string, status: TaskStatus) {
-    //     const task = this.fetchTaskById(id);
+    async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+        return this.taskRepository.updateTaskStatus(id, status)
 
-    //     task.status = status;
-
-    //     return task;
-    // }
+    }
 }
