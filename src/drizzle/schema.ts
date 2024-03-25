@@ -1,3 +1,7 @@
+/**
+* Schema file for drizzle
+*/
+
 import { text, sqliteTable } from 'drizzle-orm/sqlite-core';
 import { v4 as uuid } from "uuid"
 
@@ -11,3 +15,8 @@ export const tasks = sqliteTable('tasks', {
 });
 
 
+export const users = sqliteTable("users", {
+    id: text("id").primaryKey().$defaultFn(() => uuid()),
+    username: text("username").unique().notNull(),
+    password: text("password").notNull()
+})

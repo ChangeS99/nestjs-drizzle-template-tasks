@@ -1,3 +1,10 @@
 {
-  "sqltools.connections": []
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:nestjs-task-management}/demo2.db",
+      "name": "nest"
+    }
+  ]
 }

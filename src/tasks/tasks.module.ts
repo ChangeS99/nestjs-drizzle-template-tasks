@@ -11,7 +11,7 @@ import { Task } from './task.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Task]),
+        // TypeOrmModule.forFeature([Task]),
         DrizzleModule
     ],
     providers: [
