@@ -36,8 +36,7 @@ export class TaskRepository {
             title: createTaskDto.title,
             description: createTaskDto.description,
             status: TaskStatus.OPEN
-        })
-
+        }).returning()
 
         return task[0];
     }

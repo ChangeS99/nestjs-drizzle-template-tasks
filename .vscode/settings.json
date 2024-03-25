@@ -3,8 +3,8 @@
     {
       "previewLimit": 50,
       "driver": "SQLite",
-      "database": "${workspaceFolder:nestjs-task-management}/src/drizzle/demo.db",
-      "name": "xz"
+      "database": "${workspaceFolder:nestjs-task-management}/demo2.db",
+      "name": "nest"
     }
   ]
 }
