@@ -4,9 +4,10 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { DeleteTaskDto } from './dto/delete.task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
-import { Task } from 'src/drizzle/schema.types';
+import { Task, User } from 'src/drizzle/schema.types';
 import { filter } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '@src/auth/get-user.decorator';
 
 @Controller('tasks')
 @UsePipes(new ValidationPipe({
@@ -23,10 +24,11 @@ export class TasksController {
 
     @Get()
     getTasks(
-        @Query() filterDto: GetTasksFilterDto
+        @Query() filterDto: GetTasksFilterDto,
+        @GetUser() user: User
     ): Promise<Task[]> {
 
-        return this.tasksService.getTasks(filterDto)
+        return this.tasksService.getTasks(filterDto, user)
 
     }
 
@@ -46,9 +48,10 @@ export class TasksController {
 
     @Post("create")
     createTask(
-        @Body() createTaskDto: CreateTaskDto
+        @Body() createTaskDto: CreateTaskDto,
+        @GetUser() user: User
     ): Promise<Task> {
-        return this.tasksService.createTask(createTaskDto)
+        return this.tasksService.createTask(createTaskDto, user)
     }
 
     @Delete(":id")

@@ -22,7 +22,7 @@ export const tasks = sqliteTable('tasks', {
     status: text("status", {
         enum: ["OPEN", "IN_PROGRESS", "DONE"]
     }).default("OPEN"),
-    authodId: text('authod_id').references(() => users.id, { onDelete: 'cascade' })
+    authorId: text('author_id').references(() => users.id, { onDelete: 'cascade' })
 });
 
 // set up relation of users
@@ -36,7 +36,7 @@ export const usersRelations = relations(users, ({ many }) => {
 export const tasksRelations = relations(tasks, ({ one }) => {
     return {
         user: one(users, {
-            fields: [tasks.authodId],
+            fields: [tasks.authorId],
             references: [users.id]
         })
     }

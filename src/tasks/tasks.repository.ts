@@ -9,7 +9,7 @@ import { CreateTaskDto } from "./dto/create-task.dto";
 import { TaskStatus } from "./task-status.enum";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Task } from "@src/drizzle/schema.types";
+import { Task, User } from "@src/drizzle/schema.types";
 import { Repository } from "typeorm";
 
 export class TaskRepository {
@@ -31,11 +31,14 @@ export class TaskRepository {
         return task
     }
 
-    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+
+
         const task = await this.db.insert(schema.tasks).values({
             title: createTaskDto.title,
             description: createTaskDto.description,
-            status: TaskStatus.OPEN
+            status: TaskStatus.OPEN,
+            authorId: user.id
         }).returning()
 
         return task[0];
@@ -65,20 +68,29 @@ export class TaskRepository {
         return updated[0]
     }
 
-    async getTasks(filterDto: GetTasksFilterDto) {
+    async getTasks(filterDto: GetTasksFilterDto, user: User) {
         const { status, search } = filterDto;
         // if status and search both are defined
         if (status && search) {
-            const result = await this.db.select().from(schema.tasks).where(
+            const result = await this.db.select({
+                title: schema.tasks.title,
+                description: schema.tasks.description,
+                id: schema.tasks.id,
+                user: {
+                    username: schema.users.username,
+                    id: schema.users.id
+                }
+            }).from(schema.tasks).where(
                 and(
                     or(
                         sql`lower(${schema.tasks.title}) like lower(${search})`,
                         sql`lower(${schema.tasks.description}) like lower(${search})`
                     ),
-                    eq(schema.tasks.status, status)
+                    eq(schema.tasks.status, status),
+                    eq(schema.tasks.authorId, user.id)
                 )
 
-            )
+            ).leftJoin(schema.users, eq(schema.tasks.authorId, schema.users.id),);
 
             return result
 
@@ -86,27 +98,65 @@ export class TaskRepository {
 
         // if status is given
         if (status) {
-            const result = await this.db.select().from(schema.tasks).where(
-                eq(schema.tasks.status, status)
-            )
+            const result = await this.db.select(
+                {
+                    title: schema.tasks.title,
+                    description: schema.tasks.description,
+                    id: schema.tasks.id,
+                    user: {
+                        username: schema.users.username,
+                        id: schema.users.id
+                    }
+                }
+            ).from(schema.tasks).where(
+                and(
+                    eq(schema.tasks.status, status),
+                    eq(schema.tasks.authorId, user.id)
+                )
+
+            ).leftJoin(schema.users, eq(schema.tasks.authorId, schema.users.id),);
 
             return result
         }
 
         // if search is defined 
         if (search) {
-            const result = await this.db.select().from(schema.tasks).where(
-                or(
-                    sql`lower(${schema.tasks.title}) like lower(${search})`,
-                    sql`lower(${schema.tasks.description}) like lower(${search})`
+            const result = await this.db.select({
+                title: schema.tasks.title,
+                description: schema.tasks.description,
+                id: schema.tasks.id,
+                user: {
+                    username: schema.users.username,
+                    id: schema.users.id
+                }
+            }).from(schema.tasks).where(
+                and(
+                    or(
+                        sql`lower(${schema.tasks.title}) like lower(${search})`,
+                        sql`lower(${schema.tasks.description}) like lower(${search})`
+                    ),
+                    eq(schema.tasks.status, status),
+                    eq(schema.tasks.authorId, user.id)
                 )
 
-            )
+            ).leftJoin(schema.users, eq(schema.tasks.authorId, schema.users.id),);
 
             return result
         }
 
-        const result = await this.db.select().from(schema.tasks)
+        const result = await this.db.select(
+            {
+                title: schema.tasks.title,
+                description: schema.tasks.description,
+                id: schema.tasks.id,
+                user: {
+                    username: schema.users.username,
+                    id: schema.users.id
+                }
+            }
+        ).from(schema.tasks)
+            .where(eq(schema.tasks.authorId, user.id))
+            .leftJoin(schema.users, eq(schema.tasks.authorId, schema.users.id));
 
         return result
 

@@ -5,7 +5,7 @@ import { DeleteTaskDto } from "./dto/delete.task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { TaskRepository } from "./tasks.repository";
 import { TaskStatus } from "./task-status.enum";
-import { Task } from "@src/drizzle/schema.types"
+import { Task, User } from "@src/drizzle/schema.types"
 
 @Injectable()
 export class TasksService {
@@ -19,9 +19,9 @@ export class TasksService {
     //     return this.tasks;
     // }
 
-    getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[] | any[]> {
         const { status, search } = filterDto;
-        let tasks = this.taskRepository.getTasks(filterDto)
+        let tasks = this.taskRepository.getTasks(filterDto, user)
 
 
         return tasks
@@ -31,8 +31,8 @@ export class TasksService {
         return this.taskRepository.getTaskById(id)
     }
 
-    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-        return this.taskRepository.createTask(createTaskDto)
+    async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+        return this.taskRepository.createTask(createTaskDto, user)
     }
 
     async deleteTask(id: string): Promise<void> {
