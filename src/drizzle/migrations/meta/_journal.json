@@ -15,6 +15,13 @@
       "when": 1711344572846,
       "tag": "0001_flimsy_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1713859526721,
+      "tag": "0002_lethal_master_mold",
+      "breakpoints": true
     }
   ]
 }
